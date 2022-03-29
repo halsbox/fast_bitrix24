@@ -8,7 +8,7 @@ class ServerResponse():
         if self.result_error:
             error = self.result_error
             if isinstance(error, dict):
-                error = {k: v for k, v in self.result_error.items() if list(v.values()) != ['', '']}
+                error = {k: v for k, v in self.result_error.items() if v['error'] not in ('', 'ERROR_NOT_FOUND')}
                 if not error:
                     return
             raise RuntimeError(
