@@ -150,9 +150,12 @@ class ServerRequestHandler():
         '''Делает попытку запроса к серверу, ожидая при необходимости.'''
 
         try:
-            async with self.acquire(), self.session.post(
-                    url=self.webhook + method, json=params) as response:
-                return ServerResponse(await response.json(encoding='utf-8'))
+            if ('DOWNLOAD_URL' in params):
+                async with self.acquire(), self.session.get(url=params['DOWNLOAD_URL']) as response:
+                    return ServerResponse({'result': [{'data':await response.read()}],'next':0,'total':1})
+            else:
+                async with self.acquire(), self.session.post(url=self.webhook + method, json=params) as response:
+                    return ServerResponse(await response.json(encoding='utf-8'))
 
         except ClientResponseError as error:
             if error.status // 100 == 5:  # ошибки вида 5XX
