@@ -6,8 +6,13 @@ class ServerResponse():
 
     def check_for_errors(self):
         if self.result_error:
+            error = self.result_error
+            if isinstance(error, dict):
+                error = {k: v for k, v in self.result_error.items() if list(v.values()) != ['', '']}
+                if not error:
+                    return
             raise RuntimeError(
-                f'The server reply contained an error: {self.result_error}')
+                f'The server reply contained an error: {error}')
 
     def __getattr__(self, item):
 
